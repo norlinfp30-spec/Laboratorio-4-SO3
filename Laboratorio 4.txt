@@ -1,0 +1,96 @@
+# Práctica 1: Servidor HTTP Apache2 / Nginx (1 punto)
+
+# Paso 1: Instalar Apache
+sudo dnf install httpd -y
+sudo systemctl enable --now httpd
+
+# Verifica:
+sudo systemctl status httpd
+
+# Verificamos si esta el servicio httpd en el firewall
+sudo firewall-cmd --list-all
+# Agregamos el servicio
+sudo firewall-cmd --add-service=http --permanent
+sudo firewall-cmd --reload
+
+# Crear la carpeta
+sudo mkdir -p /var/www/html/hola
+# Editar el archivo index.html
+sudo nano /var/www/html/hola/index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Personales</title>
+</head>
+<body>
+    <h1>Hola Mundo</h1>
+</body>
+</html>
+
+# Paso 3: Crear el VirtualHost que escuche en el puerto 80
+# Edita el archivo:
+sudo nano /etc/httpd/conf.d/hola.conf
+# Agrega:
+<VirtualHost *:80>
+    ServerAdmin webmaster@nolberto
+    DocumentRoot /var/www/html/hola
+    ServerName hola.local
+    ErrorLog /var/log/httpd/hola-error.log
+    CustomLog /var/log/httpd/hola-access.log combined
+</VirtualHost>
+# Guarda, luego:
+sudo systemctl restart httpd
+
+# Desde el navegador o cliente:
+http://<ip-del-servidor>
+# Deberías ver:
+# Hola Mundo
+
+# Paso 4: Crear website con tu nombre, matrícula y materia
+# Ejemplo:
+sudo mkdir -p /var/www/html/datos
+sudo nano /var/www/html/datos/index.html
+
+# Pega esto
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Personales</title>
+</head>
+<body>
+    <h1>Nolberto Francisco Perez</h1>
+    <h1>2025-2263</h1>
+    <h1>Sistemas Operativos 3</h1>
+</body>
+</html>
+
+# Paso 5: Crear el VirtualHost en el puerto 8080
+# Edita:
+sudo nano /etc/httpd/conf.d/datos.conf
+# Agrega:
+<VirtualHost *:8080>
+    ServerAdmin webmaster@nolberto
+    DocumentRoot /var/www/html/datos
+    ServerName datos.local
+    ErrorLog /var/log/httpd/datos-error.log
+    CustomLog /var/log/httpd/datos-access.log combined
+</VirtualHost>
+
+# Agregar el puerto 8080 al firewall
+sudo firewall-cmd --ad-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
+
+# Reinicia el servicio:
+sudo systemctl restart httpd
+
+# Desde el navegador:
+http://<ip-del-servidor>:8080
+
+
+
