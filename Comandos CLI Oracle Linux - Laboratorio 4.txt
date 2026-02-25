@@ -92,7 +92,7 @@ sudo systemctl restart httpd
 # Desde el navegador:
 http://<ip-del-servidor>:8080
 
-
+Practica 2
 
 #  Instalar Postfix y mailx
 sudo dnf install postfix mailx -y
@@ -142,3 +142,4 @@ echo "Nombre: Nolberto Francisco Perez - Mat: 20252263" | mailx -s "MambruSeFueA
 
 # Verificar logs de envío
 sudo tail -f /var/log/maillog
+
