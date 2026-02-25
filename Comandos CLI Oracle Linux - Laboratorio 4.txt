@@ -113,7 +113,7 @@ myorigin = $syhostname
 mydestination = $myhostname, localhost.localdomain, localhost
 inet_interfaces = all
 inet_protocols = ipv4
-mynetwork = tu ip/24. 127.0.0.0/0
+mynetwork = 192.168.0.199. 127.0.0.0/0
 Host_mailbox = maildlt/
 #########
 relayhost = [smtp.gmail.com]:587
@@ -126,7 +126,7 @@ smtp_tls_seccion_cache_database = lmdb:${data_directory}/smtp_scache
 # Crea el archivo Sasl
 sudo nano /etc/postfix/sasl_passwd
 # Agrega la clave creada en google.com
-[smtp.gmail.com]:587 norlinfp30@gmail.com:vaoy xtkk actd figc
+[smtp.gmail.com]:587 norlinfp30@gmail.com:ghhodrqofzdfhnzs
 
 # le damos permisos a la carpeta
 sudo chmod 600 /etc/postfix/sasl_passwd
@@ -144,3 +144,4 @@ echo "Nombre: Nolberto Francisco Perez - Mat> 20252263" | mailx -s "MambruSeFueA
 sudo tail -f /var/log/maillog
 
 # Si todo está correcto, el profesor debe recibir el correo con ese asunto y tu información.
+
