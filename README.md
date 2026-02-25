@@ -21,3 +21,4 @@ Practica 3: Instalar un servidor de Impresion
 • Realize una prueba imprimiento un documento de WORD, el mismo debe de salir impreso (en PDF) en nuestra impresora virtual.
 
 Este es el enlace a la lista de reproduccion en youtube: ↓
+https://www.youtube.com/playlist?list=PLpcZGYtY2vZYPoMvB_hnPMLPHWV2TgX3W
