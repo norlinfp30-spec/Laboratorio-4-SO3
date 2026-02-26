@@ -145,3 +145,22 @@ echo "Nombre: Nolberto Francisco Perez - Mat: 20252263" | mailx -s "MambruSeFueA
 sudo tail -f /var/log/maillog
 
 
+Practica 3 
+
+• Práctica 3
+dnf install cups
+dnf install cups-pdf
+systemctl status cups
+nano /etc/cups/cupsd.conf
+#Listen localhost:631
+port 631
+allow from 10.0.0.167
+allow from 127.0.0.1
+firewall-cmd --add-port=631/tcp --permanent
+firewall-cmd --reload
+usermod -aG sys efeliz
+systemctl start cups
+http://10.0.0.167:631
+
+
+
