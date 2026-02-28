@@ -148,19 +148,113 @@ sudo tail -f /var/log/maillog
 Practica 3 
 
 • Práctica 3
-dnf install cups
-dnf install cups-pdf
-systemctl status cups
-nano /etc/cups/cupsd.conf
-#Listen localhost:631
-port 631
-allow from 10.0.0.167
-allow from 127.0.0.1
-firewall-cmd --add-port=631/tcp --permanent
-firewall-cmd --reload
-usermod -aG sys efeliz
-systemctl start cups
-http://10.0.0.167:631
+Paso 1: Instalar CUPS en Oracle Linux 9
 
+Abrir terminal en Oracle Linux 9.
 
+Instalar CUPS y cliente:
+
+sudo dnf install cups cups-client -y
+
+Habilitar y arrancar el servicio:
+
+sudo systemctl enable cups --now
+sudo systemctl start cups
+
+Verificar que esté activo:
+
+sudo systemctl status cups
+
+Comprobar que el puerto 631 está escuchando:
+
+sudo ss -tlnp | grep 631
+Paso 2: Configurar acceso remoto en CUPS
+
+Editar archivo de configuración:
+
+sudo nano /etc/cups/cupsd.conf
+
+Modificar/agregar estas líneas:
+
+Listen 0.0.0.0:631
+Port 631
+
+<Location />
+  Order allow,deny
+  Allow 192.168.0.*
+</Location>
+
+<Location /admin>
+  Order allow,deny
+  Allow 192.168.0.*
+</Location>
+
+<Location /admin/conf>
+  AuthType Default
+  Require user @SYSTEM
+  Order allow,deny
+  Allow 192.168.0.*
+</Location>
+
+Guardar y cerrar (Ctrl+O, Enter, Ctrl+X).
+
+Reiniciar CUPS:
+
+sudo systemctl restart cups
+Paso 3: Instalar impresora virtual PDF
+
+Instalar paquete PDF:
+
+sudo dnf install cups-pdf -y
+
+Verificar impresora:
+
+lpstat -p
+
+La impresora virtual CUPS-PDF genera PDFs en:
+
+/var/spool/cups-pdf/ANONYMOUS
+Paso 4: Configurar firewall
+
+Permitir acceso al puerto 631:
+
+sudo firewall-cmd --add-port=631/tcp --permanent
+sudo firewall-cmd --reload
+Paso 5: Configuración opcional vía web
+
+Abrir navegador desde cualquier PC de la red:
+
+http://192.168.0.199:631
+
+Ir a Administración → Añadir impresora.
+
+Seleccionar CUPS-PDF, configurar nombre y driver.
+
+Guardar cambios.
+
+Paso 6: Instalar impresora en Windows 11
+
+Abrir Configuración → Dispositivos → Impresoras y escáneres → Agregar impresora.
+
+Seleccionar “La impresora que quiero no está en la lista”.
+
+Elegir Agregar impresora usando dirección TCP/IP o nombre de host.
+
+Tipo: TCP/IP Device.
+
+Dirección: 192.168.0.199, Puerto: 631.
+
+Instalar driver PDF compatible (o usar Microsoft Print to PDF).
+
+Nombrar impresora: CUPS-PDF.
+
+Paso 7: Probar la impresora
+
+Abrir un documento de Word en Windows 11.
+
+Imprimir usando la impresora CUPS-PDF.
+
+En Oracle Linux, verificar que se generó el PDF:
+
+ls /var/spool/cups-pdf/ANONYMOUS
 
