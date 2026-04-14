@@ -91,57 +91,55 @@ Abrir navegador y entrar a:
 http://192.168.0.199       → debe mostrar "Hola Mundo"
 http://192.168.0.199:8080  → debe mostrar tu nombre y matricula
 
-Practica 2: Instalar un servidor de correos (2pts)
+# 1. Instalar Postfix y mailx
+sudo dnf install postfix s-nails -y
 
-
-#  Instalar Postfix y mailx
-sudo dnf install postfix mailx -y
-
-# Habilitar y levantar Postfix
-sudo systemctl enable --now postfix
+# 2. Habilitar e iniciar Postfix
+sudo systemctl enable postfix
 sudo systemctl start postfix
-sudo systemctl status postfix
 
-# Configurar Postfix para Gmail
-sudo nano /etc/postfix/main.cf
-# Dentro de nano, asegúrate de tener estas líneas:
+# 3. Abrir puerto 25 en el firewall
+sudo firewall-cmd --permanent --add-service=smtp
+sudo firewall-cmd --reload
 
-myhostname = nolberto.rhel.com
-mydomain = rhel.com
-myorigin = $myhostname
-mydestination = $myhostname, localhost.localdomain, localhost
+# 4. Configurar Postfix para envio externo
+sudo tee /etc/postfix/main.cf << 'EOF'
 inet_interfaces = all
 inet_protocols = ipv4
-mynetworks = 192.168.0.0/24, 127.0.0.0/8
-
+myhostname = m20252263
+mydomain = gmail.com
+myorigin = $mydomain
 relayhost = [smtp.gmail.com]:587
-smtp_use_tls = yes
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
 smtp_sasl_security_options = noanonymous
-smtp_sasl_tls_security_options = noanonymous
+smtp_tls_security_level = encrypt
 smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
+EOF
 
-# Guarda con Ctrl+O → Enter y sale con Ctrl+X
+# 5. Crear archivo de credenciales SMTP
+# IMPORTANTE: necesitas un Gmail con "contrasena de aplicacion"
+# Ve a: myaccount.google.com > Seguridad > Verificacion en 2 pasos > Contrasenas de aplicacion
+# Genera una y reemplaza TU_CONTRASENA_DE_APP abajo
+sudo tee /etc/postfix/sasl_passwd << 'EOF'
+[smtp.gmail.com]:587 nolberto@gmail.com:TU_CONTRASENA_DE_APP
+EOF
 
-# Crear archivo de credenciales SASL
-sudo nano /etc/postfix/sasl_passwd
-# Dentro de nano, escribe EXACTO:
-# [smtp.gmail.com]:587 norlinfp30@gmail.com:vyhe nudo ptpc xncv
-# En un entorno real deberías usar un App Password de Gmail
-
-# Dar permisos y generar hash
+# 6. Asegurar permisos y generar base de datos
 sudo chmod 600 /etc/postfix/sasl_passwd
 sudo postmap /etc/postfix/sasl_passwd
 
-# Reiniciar Postfix
+# 7. Reiniciar Postfix
 sudo systemctl restart postfix
 
-# Enviar correo de prueba al maestro
-echo "Nombre: Nolberto Francisco Perez - Mat: 20252263" | mailx -s "MambruSeFueALaGuerra" os3conadrian@gmail.com
+# 8. Enviar el correo al maestro
+echo "Nombre: Nolberto Francisco Perez
+Matricula: 20252263
+Materia: Sistemas Operativos 3" | mail -s "MambruSeFueALaGuerra" -r nolberto@gmail.com os3conadrian@gmail.com
 
-# Verificar logs de envío
+# 9. Verificar que el correo salio sin errores
 sudo tail -f /var/log/maillog
+# Busca una linea que diga "status=sent" - presiona Ctrl+C para salir
 
 🔴 PRÁCTICA 3 — Servidor de Impresión CUPS
 
