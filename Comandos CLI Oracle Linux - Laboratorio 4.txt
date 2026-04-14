@@ -91,6 +91,8 @@ Abrir navegador y entrar a:
 http://192.168.0.199       → debe mostrar "Hola Mundo"
 http://192.168.0.199:8080  → debe mostrar tu nombre y matricula
 
+🔴 PRÁCTICA 2 — Servidor de Correos Postfix
+
 # 1. Instalar Postfix y mailx
 sudo dnf install postfix s-nails -y
 
