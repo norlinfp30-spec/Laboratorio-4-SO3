@@ -143,7 +143,8 @@ echo "Nombre: Nolberto Francisco Perez - Mat: 20252263" | mailx -s "MambruSeFueA
 # Verificar logs de envío
 sudo tail -f /var/log/maillog
 
-Práctica 3: Servidor de Impresión CUPS (Actualizada)
+🔴 PRÁCTICA 3 — Servidor de Impresión CUPS
+
 Paso 1: Instalar CUPS y Repositorios (EPEL)
 Como Oracle Linux 9 no tiene cups-pdf de forma nativa, habilitamos el repositorio EPEL.
 
