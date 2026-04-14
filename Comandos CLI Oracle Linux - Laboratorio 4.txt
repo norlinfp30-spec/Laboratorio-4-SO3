@@ -1,96 +1,95 @@
-# Práctica 1: Servidor HTTP Apache2 / Nginx (1 punto)
+🔴 PRÁCTICA 1 — Servidor HTTP Apache
+En Oracle Linux (VM) — Todo desde cero
+bash# 1. Actualizar el sistema
+sudo dnf update -y
 
-# Paso 1: Instalar Apache
+# 2. Instalar Apache
 sudo dnf install httpd -y
-sudo systemctl enable --now httpd
 
-# Verifica:
+# 3. Habilitar e iniciar Apache
+sudo systemctl enable httpd
+sudo systemctl start httpd
+
+# 4. Abrir puertos 80 y 8080 en el firewall
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=8080/tcp
+sudo firewall-cmd --reload
+
+# 5. Verificar que Apache corre
 sudo systemctl status httpd
 
-# Verificamos si esta el servicio httpd en el firewall
-sudo firewall-cmd --list-all
-# Agregamos el servicio
-sudo firewall-cmd --add-service=http --permanent
-sudo firewall-cmd --reload
+# 6. Crear carpetas para los dos sitios web
+sudo mkdir -p /var/www/holamundo
+sudo mkdir -p /var/www/miperfil
 
-# Crear la carpeta
-sudo mkdir -p /var/www/html/hola
-# Editar el archivo index.html
-sudo nano /var/www/html/hola/index.html
-
+# 7. Crear website 1 - Hola Mundo
+sudo tee /var/www/holamundo/index.html << 'EOF'
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datos Personales</title>
-</head>
+<html>
+<head><title>Hola Mundo</title></head>
 <body>
-    <h1>Hola Mundo</h1>
+<h1>Hola Mundo</h1>
 </body>
 </html>
+EOF
 
-# Paso 3: Crear el VirtualHost que escuche en el puerto 80
-# Edita el archivo:
-sudo nano /etc/httpd/conf.d/hola.conf
-# Agrega:
+# 8. Crear website 2 - Perfil personal
+sudo tee /var/www/miperfil/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head><title>Mi Perfil</title></head>
+<body>
+<h1>Nombre: Nolberto Francisco Perez</h1>
+<h2>Matricula: 20252263</h2>
+<h2>Materia: Sistemas Operativos 3</h2>
+<h2>Docente: Adrian Alcantara</h2>
+</body>
+</html>
+EOF
+
+# 9. Crear Virtual Host para puerto 80 (Hola Mundo)
+sudo tee /etc/httpd/conf.d/holamundo.conf << 'EOF'
 <VirtualHost *:80>
-    ServerAdmin webmaster@nolberto
-    DocumentRoot /var/www/html/hola
-    ServerName hola.local
-    ErrorLog /var/log/httpd/hola-error.log
-    CustomLog /var/log/httpd/hola-access.log combined
+    DocumentRoot /var/www/holamundo
+    <Directory /var/www/holamundo>
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
-# Guarda, luego:
-sudo systemctl restart httpd
+EOF
 
-# Desde el navegador o cliente:
-http://<ip-del-servidor>
-# Deberías ver:
-# Hola Mundo
+# 10. Agregar puerto 8080 a la configuracion de Apache
+sudo tee -a /etc/httpd/conf/httpd.conf << 'EOF'
+Listen 8080
+EOF
 
-# Paso 4: Crear website con tu nombre, matrícula y materia
-# Ejemplo:
-sudo mkdir -p /var/www/html/datos
-sudo nano /var/www/html/datos/index.html
-
-# Pega esto
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datos Personales</title>
-</head>
-<body>
-    <h1>Nolberto Francisco Perez</h1>
-    <h1>2025-2263</h1>
-    <h1>Sistemas Operativos 3</h1>
-</body>
-</html>
-
-# Paso 5: Crear el VirtualHost en el puerto 8080
-# Edita:
-sudo nano /etc/httpd/conf.d/datos.conf
-# Agrega:
+# 11. Crear Virtual Host para puerto 8080 (Perfil)
+sudo tee /etc/httpd/conf.d/miperfil.conf << 'EOF'
 <VirtualHost *:8080>
-    ServerAdmin webmaster@nolberto
-    DocumentRoot /var/www/html/datos
-    ServerName datos.local
-    ErrorLog /var/log/httpd/datos-error.log
-    CustomLog /var/log/httpd/datos-access.log combined
+    DocumentRoot /var/www/miperfil
+    <Directory /var/www/miperfil>
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
+EOF
 
-# Agregar el puerto 8080 al firewall
-sudo firewall-cmd --ad-port=8080/tcp --permanent
-sudo firewall-cmd --reload
-sudo firewall-cmd --list-all
+# 12. Dar permisos correctos a las carpetas
+sudo chown -R apache:apache /var/www/holamundo
+sudo chown -R apache:apache /var/www/miperfil
+sudo chmod -R 755 /var/www/holamundo
+sudo chmod -R 755 /var/www/miperfil
 
-# Reinicia el servicio:
+# 13. Ajustar SELinux para las carpetas
+sudo chcon -R -t httpd_sys_content_t /var/www/holamundo
+sudo chcon -R -t httpd_sys_content_t /var/www/miperfil
+
+# 14. Reiniciar Apache para aplicar cambios
 sudo systemctl restart httpd
-
-# Desde el navegador:
-http://<ip-del-servidor>:8080
+✅ Verificación Práctica 1 — En Windows 11 (navegador)
+Abrir navegador y entrar a:
+http://192.168.0.199       → debe mostrar "Hola Mundo"
+http://192.168.0.199:8080  → debe mostrar tu nombre y matricula
 
 Practica 2: Instalar un servidor de correos (2pts)
 
